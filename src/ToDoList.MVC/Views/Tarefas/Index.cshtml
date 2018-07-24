@@ -1,0 +1,108 @@
+﻿@model IEnumerable<ToDoList.MVC.ModelsView.ToDoViewModel>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Gerencimento de Tarefas</h2>
+
+<p>
+    <a href="#" class="btn btn-success" data-action="create">
+        <span class='glyphicon glyphicon-plus'></span> Nova Tarefa
+    </a>
+</p>
+
+<table id="todo-data" class="table table-condensed table-hover table-striped">
+    <thead>
+        <tr>
+            <th data-column-id="ToDoId" data-order="asc">ID</th>
+            <th data-column-id="Title">Titulo</th>
+            <th data-column-id="Description">Descrição</th>
+            <th data-column-id="IsCompleted">Received</th>
+            <th data-column-id="CreateDate">Data de cadastro</th>
+            <th data-formatter="actions"> </th>
+        </tr>
+    </thead>
+</table>
+<div class="modal fade" id="modalTarefas" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div id="conteudoModal"></div>
+      </div>      
+    </div>
+  </div>
+</div>
+    
+@section scripts{    
+    <script src="~/Scripts/jquery.bootgrid.js"></script>
+    <script type="text/javascript">
+        var controller = "Tarefas";
+
+        $(document).ready(gridConfiguration);
+
+        function gridConfiguration() {
+            var traducao = {
+                all : "Todos",
+                infos : "Exibindo {{ctx.start}} até {{ctx.end}} de {{ctx.total}} registros",
+                loading : "Carregando...",
+                noResults : "Não há dados para exibir!",
+                refresh : "Atualizar",
+                search : "Pesquisar"
+            }
+
+            var grid = $("#todo-data").bootgrid({
+                ajax: true,
+                url: "http://localhost:26716/tarefas/GetAll",
+                labels: traducao,
+                searchSettings: {
+                    delay: 200,
+                    characters: 2
+                },
+                formatters: {
+                    "actions": function (column, row) {
+                        return  "<a href='#' data-acao='Detalhes' data-row-id='"+ row.ToDoId +"' class='btn btn-info'><span class='glyphicon glyphicon-edit'></span></a> " +
+                                "<a href='#' data-acao='Editar' data-row-id='"+ row.ToDoId +"' class='btn btn-warning'><span class='glyphicon glyphicon-list'></span></a> " +
+                                "<a href='#' data-acao='Deletar' data-row-id='"+ row.ToDoId +"' class='btn btn-danger'><span class='glyphicon glyphicon-trash'></span></a> "
+                    }
+                }
+            });
+
+            grid.on("loaded.rs.jquery.bootgrid", function () {
+                grid.find("a.btn").each(function (index, elemento) {
+                    var botaoDeAcao = $(elemento);
+                    var acao = botaoDeAcao.data("acao");
+                    var ToDoId = botaoDeAcao.data("row-id");
+
+                    botaoDeAcao.on("click", function () {
+                        AbrirModal(acao, ToDoId);
+                    });
+                });
+            });
+
+            $("a.btn").click(function () {
+                var acao = $(this).data("action");
+                AbrirModal(acao);
+            });
+        }
+
+        function AbrirModal(acao, parametro) {
+            
+            var url = "/{ctrl}/{acao}/{parametro}";
+            url = url.replace("{ctrl}", controller);
+            url = url.replace("{acao}", acao);
+            if (parametro != null)
+                url = url.replace("{parametro}", parametro);
+            else
+                url = url.replace("{parametro}", "");
+
+            $("#modalTarefas").show("show");
+            $("#conteudoModal").load(url, function () {
+                $("#modalTarefas").modal("show");
+            });
+
+
+
+        }
+    </script>
+}
