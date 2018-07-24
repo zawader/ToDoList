@@ -1,6 +1,6 @@
 ﻿# ToDoList
+Sistema desenvolvido para prova pratica tecnica de ASP.Net para a Supero.
 
-implementação de uma TaskList utilizando ASP.Net + SQL Server
 
 ## Tarefa 
 
@@ -13,5 +13,6 @@ O usuário deve poder:
  - Editar o conteúdo da task; 
  - Deletar uma task;
 Obs.: uma task deve conter ao menos: título e status, podendo conter adicionalmente descrição, datas de criação, edição, remoção e conclusão
+
 
 
