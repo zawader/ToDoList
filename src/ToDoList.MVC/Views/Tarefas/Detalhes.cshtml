@@ -7,8 +7,6 @@
 <h2>Detalhes</h2>
 
 <div>
-    <h4>ToDoViewModel</h4>
-    <hr />
     <dl class="dl-horizontal">
         <dt>
             @Html.DisplayNameFor(model => model.Title)
@@ -31,7 +29,16 @@
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.IsCompleted)
+            @{ 
+                if (Model.IsCompleted)
+                {
+                     <span class='glyphicon glyphicon-ok alert-success'></span>
+                }
+                else
+                {
+                     <span class='glyphicon glyphicon-ok alert-danger'></span>
+                }
+            }
         </dd>
 
         <dt>
@@ -68,7 +75,3 @@
 
     </dl>
 </div>
-<p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.ToDoId }) |
-    @Html.ActionLink("Back to List", "Index")
-</p>

@@ -82,7 +82,9 @@ namespace ToDoList.MVC.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Deletar(int? id,string teste)
         {
-            _toDoAppService.RemoveById(id.Value);
+            var toDo = _toDoAppService.GetById(id.Value);
+            toDo.DeleteDate = DateTime.Now;
+            _toDoAppService.Update(toDo);
             return RedirectToAction("index");
         }
 

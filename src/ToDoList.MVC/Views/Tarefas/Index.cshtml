@@ -4,10 +4,9 @@
     ViewBag.Title = "Index";
 }
 
-<h2>Gerencimento de Tarefas</h2>
-
+<br/>
 <p>
-    <a href="#" class="btn btn-success" data-action="create">
+    <a href="#" class="btn btn-success" data-action="criar">
         <span class='glyphicon glyphicon-plus'></span> Nova Tarefa
     </a>
 </p>
@@ -15,12 +14,12 @@
 <table id="todo-data" class="table table-condensed table-hover table-striped">
     <thead>
         <tr>
-            <th data-column-id="ToDoId" data-order="asc">ID</th>
-            <th data-column-id="Title">Titulo</th>
+            <th data-column-id="ToDoId" data-visible="false">ID</th>
+            <th data-column-id="Title" data-width="20%">Titulo</th>
             <th data-column-id="Description">Descrição</th>
-            <th data-column-id="IsCompleted">Received</th>
-            <th data-column-id="CreateDate">Data de cadastro</th>
-            <th data-formatter="actions"> </th>
+            <th data-column-id="IsCompleted" data-align="center" data-width="10%" align="center" data-formatter="completed">Concluida?</th>
+            <th data-column-id="CreateDate" data-align="center" data-width="15%"  data-order="desc" data-formatter="dateformatter">Data de cadastro</th>
+            <th data-formatter="actions"  data-width="15%" data-align="center"> </th>
         </tr>
     </thead>
 </table>
@@ -36,12 +35,16 @@
     
 @section scripts{    
     <script src="~/Scripts/jquery.bootgrid.js"></script>
+<script src="~/Scripts/moment.js"></script>
     <script type="text/javascript">
         var controller = "Tarefas";
 
         $(document).ready(gridConfiguration);
-
+        $(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
         function gridConfiguration() {
+
             var traducao = {
                 all : "Todos",
                 infos : "Exibindo {{ctx.start}} até {{ctx.end}} de {{ctx.total}} registros",
@@ -60,14 +63,27 @@
                     characters: 2
                 },
                 formatters: {
+                    "dateformatter": function (column, row)
+                    {
+                        //var strDate = row.CreateDate.substring(6, 9) + "/" + row.CreateDate.substring(4, 6) + "/" + row.CreateDate.substring(0, 4);
+                        return moment.utc(row[column.CreateDate]).format('DD/MM/YYYY');
+                    },
                     "actions": function (column, row) {
-                        return  "<a href='#' data-acao='Detalhes' data-row-id='"+ row.ToDoId +"' class='btn btn-info'><span class='glyphicon glyphicon-edit'></span></a> " +
-                                "<a href='#' data-acao='Editar' data-row-id='"+ row.ToDoId +"' class='btn btn-warning'><span class='glyphicon glyphicon-list'></span></a> " +
-                                "<a href='#' data-acao='Deletar' data-row-id='"+ row.ToDoId +"' class='btn btn-danger'><span class='glyphicon glyphicon-trash'></span></a> "
+                        return  "<a href='#' data-acao='Detalhes' data-row-id='"+ row.ToDoId +"' class='btn btn-info' title='Exibir detalhes da Tarefa'><span class='glyphicon glyphicon-edit'></span></a> " +
+                                "<a href='#' data-acao='Editar' data-row-id='"+ row.ToDoId +"' class='btn btn-warning' title='Editar Tarefa'><span class='glyphicon glyphicon-list'></span></a> " +
+                                "<a href='#' data-acao='Deletar' data-row-id='"+ row.ToDoId +"' class='btn btn-danger' title='Deletar Tarefa'><span class='glyphicon glyphicon-trash'></span></a> "
+                    },
+                    "completed": function (column, row) {
+                        
+                        if (row.IsCompleted) {
+                            return "<span class='glyphicon glyphicon-ok alert-success'>";
+                        }else{
+                            return "<span class='glyphicon glyphicon-remove alert-danger'>";
+                        }
                     }
                 }
             });
-
+            
             grid.on("loaded.rs.jquery.bootgrid", function () {
                 grid.find("a.btn").each(function (index, elemento) {
                     var botaoDeAcao = $(elemento);
